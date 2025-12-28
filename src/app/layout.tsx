@@ -13,8 +13,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://pdf-liart-pi.vercel.app'),
   title: "PDF Merger",
   description: "Merge PDFs instantly and securely. 100% local processing - no file uploads required.",
+  openGraph: {
+    title: "PDF Merger | Free Local Tool",
+    description: "Combine multiple PDF files into one document in your browser. Private, secure, and instant.",
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "PDF Merger",
+    description: "Merge PDFs instantly and securely. 100% local processing.",
+    images: ['/og-image.png'],
+  },
 };
 
 export default function RootLayout({
