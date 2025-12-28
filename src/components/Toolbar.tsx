@@ -12,10 +12,12 @@ interface ToolbarProps {
     isProcessing: boolean;
     docs: Record<string, PdfDoc>;
     pagePlan: PagePlanItem[];
+    onToggleGridView?: () => void;
 }
 
-export function Toolbar({ pageCount, onAddPdf, isProcessing, docs, pagePlan }: ToolbarProps) {
+export function Toolbar({ pageCount, onAddPdf, isProcessing, docs, pagePlan, onToggleGridView }: ToolbarProps) {
     const [isExporting, setIsExporting] = React.useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleExport = async () => {
         if (pageCount === 0) return;
@@ -38,48 +40,85 @@ export function Toolbar({ pageCount, onAddPdf, isProcessing, docs, pagePlan }: T
         }
     };
 
+    const handleAddClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onAddPdf(file);
+        }
+        event.target.value = '';
+    };
+
     return (
-        <div className="h-16 bg-neutral-900 border-b border-white/10 flex items-center justify-between px-6 shrink-0 z-50">
+        <div className="h-14 sm:h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 shadow-sm relative">
             {/* Brand / Logo Area */}
-            <div className="flex items-center gap-4">
-                <div className="w-9 h-9 bg-orange-500 flex items-center justify-center font-mono font-bold text-black text-lg shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                    P
+            <div className="flex items-center gap-2 sm:gap-4">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-neutral-900 rounded-lg flex items-center justify-center text-white font-bold shadow-md shrink-0 overflow-hidden">
+                    <img src="/logo.png" alt="Nano Banana Pro Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                    <h1 className="text-white font-bold tracking-tight text-lg leading-none">PDF CONTROL</h1>
-                    <span className="text-neutral-500 font-mono text-[10px] tracking-widest uppercase">Editor Console</span>
+                    <h1 className="text-neutral-900 font-bold tracking-tight text-base sm:text-lg leading-none hidden sm:block">Nano PDF</h1>
+                    <h1 className="text-neutral-900 font-bold tracking-tight text-lg leading-none sm:hidden">Nano PDF</h1>
                 </div>
             </div>
 
-            {/* Center Actions */}
-            <div className="flex items-center gap-1 bg-neutral-800/50 p-1 rounded-sm border border-white/5">
-                <div className="h-8 px-4 flex items-center justify-center border-r border-white/10">
-                    <span className="text-neutral-400 font-mono text-xs uppercase mr-2">Pages:</span>
-                    <span className="text-white font-mono font-bold">{pageCount}</span>
-                </div>
-
-                {/* Secondary Add Button */}
-                <div className="relative h-8 w-24">
-                    <UploadZone
-                        onFileSelect={onAddPdf}
-                        isCompact
-                        className="absolute inset-0 border-0 bg-transparent hover:bg-white/5 text-neutral-300 hover:text-white !p-0 flex-row gap-2 !justify-center !rounded-sm"
-                    />
+            {/* Center Actions - Hidden on mobile */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden sm:block">
+                <div className="px-4 py-1.5 bg-neutral-100/80 backdrop-blur rounded-full flex items-center gap-3 border border-neutral-200/60 shadow-inner">
+                    <span className="text-neutral-500 text-xs font-medium uppercase tracking-wide">Total Pages</span>
+                    <span className="text-neutral-900 font-bold font-mono min-w-[1.5em] text-center">{String(pageCount).padStart(2, '0')}</span>
                 </div>
             </div>
 
             {/* Primary Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf"
+                    className="hidden"
+                />
+
+                {/* Grid Toggle: Always visible */}
+                {onToggleGridView && (
+                    <button
+                        onClick={onToggleGridView}
+                        className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-neutral-600 hover:text-neutral-900 bg-neutral-100 rounded-lg transition-colors border border-neutral-200 hover:border-neutral-300"
+                        title="Grid View"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    </button>
+                )}
+
+                <button
+                    onClick={handleAddClick}
+                    className="flex items-center gap-2 px-2 sm:px-3 py-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-all font-medium text-sm group border border-transparent hover:border-neutral-200"
+                    title="Add PDF"
+                >
+                    <div className="w-5 h-5 sm:w-auto sm:h-auto flex items-center justify-center">
+                        <div className="p-1 bg-neutral-200 rounded text-neutral-500 group-hover:bg-white group-hover:text-neutral-900 transition-colors">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        </div>
+                    </div>
+                    <span className="hidden sm:inline">Add PDF</span>
+                </button>
+
                 <button
                     onClick={handleExport}
                     disabled={isProcessing || pageCount === 0}
-                    className="group relative px-6 py-2 bg-white text-black font-bold text-sm uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed hover:bg-orange-500 transition-colors duration-200"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-neutral-900 text-white rounded-lg font-medium text-sm hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+                    title="Export PDF"
                 >
-                    <span className="relative z-10 flex items-center gap-2">
-                        {isProcessing ? 'Processing...' : 'Export PDF'}
-                        {!isProcessing && <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>}
-                    </span>
-                    <div className="absolute inset-0 bg-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-200 z-0"></div>
+                    {isProcessing ? '...' : (
+                        <>
+                            <span className="hidden sm:inline">Export</span>
+                            <Download className="w-4 h-4 sm:ml-0.5" />
+                        </>
+                    )}
                 </button>
             </div>
         </div>

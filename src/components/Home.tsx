@@ -24,7 +24,7 @@ export function Home({ onFileSelect }: HomeProps) {
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-black text-lg">
-                            P
+                            N
                         </div>
                         <span className="font-mono text-sm tracking-widest text-neutral-400 uppercase">System v1.0</span>
                     </div>
@@ -33,9 +33,8 @@ export function Home({ onFileSelect }: HomeProps) {
                 {/* Main Typography */}
                 <div className="relative z-10 space-y-8">
                     <h1 className="text-6xl xl:text-7xl font-bold text-white leading-none tracking-tighter">
-                        PDF <br />
-                        <span className="text-neutral-500">CONTROL</span> <br />
-                        CENTER
+                        NANO <br />
+                        <span className="text-neutral-500">PDF</span>
                     </h1>
 
                     <div className="space-y-6 max-w-sm">
@@ -77,8 +76,8 @@ export function Home({ onFileSelect }: HomeProps) {
                 {/* Mobile Header (Visible only on small screens) */}
                 <div className="lg:hidden mb-12 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-white text-lg rounded">P</div>
-                        <span className="font-bold text-neutral-900 tracking-tight">PDF Control</span>
+                        <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-white text-lg rounded">N</div>
+                        <span className="font-bold text-neutral-900 tracking-tight">Nano PDF</span>
                     </div>
                 </div>
 

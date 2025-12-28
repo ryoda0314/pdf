@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePdfEditor } from '@/hooks/usePdfEditor';
-import { DndContext, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, closestCorners, KeyboardSensor, PointerSensor, MouseSensor, TouchSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { PageThumbnails, Thumbnail } from './PageThumbnails';
 import { PagePreview } from './PagePreview';
@@ -28,9 +28,15 @@ export function PdfWorkspace() {
     } = usePdfEditor();
 
     const sensors = useSensors(
-        useSensor(PointerSensor, {
+        useSensor(MouseSensor, {
             activationConstraint: {
-                distance: 8,
+                distance: 10,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
             },
         }),
         useSensor(KeyboardSensor, {
@@ -60,7 +66,6 @@ export function PdfWorkspace() {
 
     // Show Home (Top Page) if no pages exist and not currently processing
     if (pagePlan.length === 0 && !isProcessing) {
-        // ... (existing Home logic) ...
         return (
             <>
                 {error && (
@@ -73,30 +78,22 @@ export function PdfWorkspace() {
             </>
         );
     }
-    // ... (rest of component) ...
 
     return (
         <div className="flex flex-col h-screen bg-neutral-100 text-neutral-900 font-sans">
-            {/* ... Toolbar and Error existing code ... */}
             <Toolbar
                 pageCount={pagePlan.length}
                 onAddPdf={addPdf}
                 isProcessing={isProcessing}
                 docs={docs}
                 pagePlan={pagePlan}
+                onToggleGridView={() => setIsGridView(!isGridView)}
             />
             {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 shadow-sm z-30" role="alert">
                     <p className="font-medium">Error</p>
                     <p className="text-sm">{error}</p>
                 </div>
-            )}
-
-
-            {/* ... Home Overlay existing code ... */}
-            {pagePlan.length === 0 && !isProcessing && (
-                // ... logic same ...
-                <div />
             )}
 
             <div className="flex flex-1 overflow-hidden">
@@ -137,9 +134,10 @@ export function PdfWorkspace() {
                     docs={docs}
                     zoom={zoom}
                     setZoom={setZoom}
+                    onSelect={setSelectedPageId}
                 />
             </div>
-            {/* ... Loading Overlay ... */}
+
             {isProcessing && (
                 <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="bg-white px-8 py-6 rounded-xl shadow-2xl flex flex-col items-center gap-4">

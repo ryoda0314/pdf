@@ -9,7 +9,7 @@ export const usePdfEditor = () => {
     const [docs, setDocs] = useState<Record<string, PdfDoc>>({});
     const [pagePlan, setPagePlan] = useState<PagePlanItem[]>([]);
     const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
-    const [zoom, setZoom] = useState<number>(1.0);
+    const [zoom, setZoom] = useState<number>(0.75); // Default zoom 75%
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 

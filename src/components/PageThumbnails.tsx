@@ -21,9 +21,12 @@ interface PageThumbnailsProps {
 export function PageThumbnails({ pagePlan, docs, selectedPageId, onSelect, onDelete, isGridView = false, onToggleGridView }: PageThumbnailsProps) {
     return (
         <div className={clsx(
-            "bg-neutral-50 border-r border-neutral-200 flex flex-col shrink-0 z-10 transition-all duration-300",
-            // When GridView is active, it takes over the full viewport relative to its parent (or fixed)
-            isGridView ? "fixed inset-0 top-16 z-40 bg-neutral-100/95 backdrop-blur-md" : "w-80"
+            "bg-neutral-50 border-r border-neutral-200 flex-col shrink-0 z-10 transition-all duration-300",
+            // Mobile Optimization:
+            // - By default: HIDDEN on mobile (<sm), visible on desktop (w-80)
+            !isGridView && "hidden sm:flex w-80",
+            // - Grid View: visible and fixed inset on ALL screens
+            isGridView && "fixed inset-0 top-14 sm:top-16 z-40 bg-neutral-100/95 backdrop-blur-md flex"
         )}>
             <div className="p-4 border-b border-neutral-200 bg-white flex items-center justify-between shadow-sm z-20">
                 <div className="flex items-center gap-4">
@@ -59,8 +62,8 @@ export function PageThumbnails({ pagePlan, docs, selectedPageId, onSelect, onDel
             </div>
 
             <div className={clsx(
-                "flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-transparent pb-32", // Added pb-32 for extra scroll space
-                isGridView ? "grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-8 content-start m-auto max-w-7xl w-full" : "space-y-4"
+                "flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-transparent pb-32",
+                isGridView ? "p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 sm:gap-8 content-start m-auto max-w-7xl w-full" : "p-6 space-y-4"
             )}>
                 <SortableContext items={pagePlan.map(p => p.id)} strategy={rectSortingStrategy}>
                     {pagePlan.map((item, index) => (
@@ -90,60 +93,64 @@ interface ThumbnailProps extends React.HTMLAttributes<HTMLDivElement> {
     isSelected: boolean;
     isGridView?: boolean;
     onDelete?: (e: React.MouseEvent) => void;
-    // For drag overlay usage, we might want to force certain styles
     isOverlay?: boolean;
     isDragging?: boolean;
 }
 
-export function Thumbnail({ item, index, doc, isSelected, isGridView, onDelete, isOverlay, isDragging, className, ...props }: ThumbnailProps) {
-    return (
-        <div
-            className={clsx(
-                "relative group bg-white border transition-all shadow-sm select-none",
-                // Base Layout
-                isGridView ? "p-4" : "p-3",
-
-                // Active/Selected States
-                (isSelected && !isOverlay) ? "border-orange-500 ring-1 ring-orange-500 shadow-md" : "border-transparent",
-                (!isSelected && !isOverlay) && "hover:border-neutral-300",
-
-                // Dragging States
-                isDragging && "opacity-30 grayscale", // Placeholder look
-                isOverlay && "border-orange-500 ring-4 ring-orange-500/20 shadow-2xl scale-105 rotate-2 z-50 cursor-grabbing !opacity-100", // Flying card look
-
-                // Grid hover effects (only when not dragging)
-                (isGridView && !isDragging && !isOverlay) && "hover:shadow-lg hover:-translate-y-1",
-
-                className
-            )}
-            {...props}
-        >
-            <div className="absolute top-2 left-2 z-10 bg-neutral-900 text-white font-mono text-[10px] px-1.5 py-0.5">
-                {String(index + 1).padStart(2, '0')}
-            </div>
-
-            {onDelete && (
-                <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(e); }}
-                    className="absolute top-2 right-2 z-10 p-1.5 bg-neutral-900/80 text-white rounded-sm opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-sm backdrop-blur-sm"
-                    title="Delete page"
-                >
-                    <Trash2 className="w-3.5 h-3.5" />
-                </button>
-            )}
-
-            {/* Drag Handle - Only show if not overlay */}
-            {!isOverlay && (
-                <div className="absolute bottom-2 right-2 z-10 p-1.5 bg-neutral-900/10 text-neutral-900 rounded-sm cursor-grab opacity-0 group-hover:opacity-100 transition-all hover:bg-neutral-900 hover:text-white backdrop-blur-sm">
-                    <GripVertical className="w-3.5 h-3.5" />
+export const Thumbnail = React.forwardRef<HTMLDivElement, ThumbnailProps>(
+    ({ item, index, doc, isSelected, isGridView, onDelete, isOverlay, isDragging, className, ...props }, ref) => {
+        return (
+            <div
+                ref={ref}
+                className={clsx(
+                    "relative group bg-white border transition-all shadow-sm select-none",
+                    isGridView ? "p-4" : "p-3",
+                    (isSelected && !isOverlay) ? "border-orange-500 ring-1 ring-orange-500 shadow-md" : "border-transparent",
+                    (!isSelected && !isOverlay) && "hover:border-neutral-300",
+                    isDragging && "opacity-30 grayscale",
+                    isOverlay && "border-orange-500 ring-4 ring-orange-500/20 shadow-2xl scale-105 rotate-2 z-50 cursor-grabbing !opacity-100",
+                    (isGridView && !isDragging && !isOverlay) && "hover:shadow-lg hover:-translate-y-1",
+                    className
+                )}
+                {...props}
+            >
+                <div className="absolute top-2 left-2 z-10 bg-neutral-900 text-white font-mono text-[10px] px-1.5 py-0.5">
+                    {String(index + 1).padStart(2, '0')}
                 </div>
-            )}
 
-            <div className="aspect-[3/4] bg-neutral-100 border border-neutral-100 overflow-hidden flex items-center justify-center pointer-events-none">
-                <ThumbnailCanvas doc={doc} pageIndex={item.pageIndex} />
+                {onDelete && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onDelete(e); }}
+                        className="absolute top-2 right-2 z-10 p-1.5 bg-neutral-900/80 text-white rounded-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all hover:bg-red-600 shadow-sm backdrop-blur-sm"
+                        title="Delete page"
+                    >
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                )}
+
+                {!isOverlay && (
+                    <div className="absolute bottom-2 right-2 z-10 p-1.5 bg-neutral-900/10 text-neutral-900 rounded-sm cursor-grab opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all hover:bg-neutral-900 hover:text-white backdrop-blur-sm">
+                        <GripVertical className="w-3.5 h-3.5" />
+                    </div>
+                )}
+
+                <div className="aspect-[3/4] bg-neutral-100 border border-neutral-100 overflow-hidden flex items-center justify-center pointer-events-none">
+                    <ThumbnailCanvas doc={doc} pageIndex={item.pageIndex} />
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
+);
+Thumbnail.displayName = 'Thumbnail';
+
+interface SortableThumbnailProps {
+    item: PagePlanItem;
+    index: number;
+    doc: PdfDoc;
+    isSelected: boolean;
+    onSelect: () => void;
+    onDelete: (e: React.MouseEvent) => void;
+    isGridView?: boolean;
 }
 
 function SortableThumbnail({ item, index, doc, isSelected, onSelect, onDelete, isGridView }: SortableThumbnailProps) {
@@ -188,19 +195,10 @@ function ThumbnailCanvas({ doc, pageIndex }: { doc: PdfDoc, pageIndex: number })
         const render = async () => {
             if (!canvasRef.current) return;
             try {
-                // To properly render, we need to re-load the document via pdf.js logic using the bytes.
-                // Since PdfDoc only holds the proxy from the initial load which might be "detached" if we didn't keep it alive?
-                // Actually PdfManager.loadPdf returned the proxy. We need to store that proxy or re-hydrate it.
-                // Storing Proxy in React State (docs) is non-serializable but often works in client components.
-                // However, for best practice, let's re-parse bytes if needed, OR we should have stored the proxy in a global cache (not in Redux/State).
-                // For this helper, let's assume we re-load efficiently or cache.
-                // OPTIMIZATION: In this simplified version, we'll re-load from bytes. In production, use an LRU cache for PDFDocumentProxy.
-
                 const loadingTask = (await import('pdfjs-dist')).getDocument(doc.bytes.slice());
                 const pdf = await loadingTask.promise;
                 if (!active) return;
-
-                await PdfManager.renderPageToCanvas(pdf, pageIndex, canvasRef.current, 0.3); // Scale 0.3
+                await PdfManager.renderPageToCanvas(pdf, pageIndex, canvasRef.current, 0.3);
                 if (active) setLoaded(true);
             } catch (e) {
                 console.error(e);
