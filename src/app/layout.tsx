@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nano PDF",
-  description: "Simple, fast, local PDF editor.",
+  title: "PDF Merger",
+  description: "Merge PDFs instantly and securely. 100% local processing - no file uploads required.",
 };
 
 export default function RootLayout({

@@ -60,8 +60,8 @@ export function Toolbar({ pageCount, onAddPdf, isProcessing, docs, pagePlan, onT
                     <img src="/logo.png" alt="Nano Banana Pro Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                    <h1 className="text-neutral-900 font-bold tracking-tight text-base sm:text-lg leading-none hidden sm:block">Nano PDF</h1>
-                    <h1 className="text-neutral-900 font-bold tracking-tight text-lg leading-none sm:hidden">Nano PDF</h1>
+                    <h1 className="text-neutral-900 font-bold tracking-tight text-base sm:text-lg leading-none hidden sm:block">PDF Merger</h1>
+                    <h1 className="text-neutral-900 font-bold tracking-tight text-lg leading-none sm:hidden">PDF Merger</h1>
                 </div>
             </div>
 

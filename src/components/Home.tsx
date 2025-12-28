@@ -24,22 +24,22 @@ export function Home({ onFileSelect }: HomeProps) {
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-black text-lg">
-                            N
+                            P
                         </div>
-                        <span className="font-mono text-sm tracking-widest text-neutral-400 uppercase">System v1.0</span>
+                        <span className="font-mono text-sm tracking-widest text-neutral-400 uppercase">Free Local Tool</span>
                     </div>
                 </div>
 
                 {/* Main Typography */}
                 <div className="relative z-10 space-y-8">
                     <h1 className="text-6xl xl:text-7xl font-bold text-white leading-none tracking-tighter">
-                        NANO <br />
-                        <span className="text-neutral-500">PDF</span>
+                        PDF <br />
+                        <span className="text-neutral-500">MERGER</span>
                     </h1>
 
                     <div className="space-y-6 max-w-sm">
                         <p className="text-lg text-neutral-400 font-light border-l-2 border-orange-500 pl-6 leading-relaxed">
-                            Precision tools for document compositing. Merge, reorder, and structure your PDFs without server transmission.
+                            Combine multiple PDF files into one document. 100% private - runs entirely in your browser.
                         </p>
                     </div>
                 </div>
@@ -47,19 +47,19 @@ export function Home({ onFileSelect }: HomeProps) {
                 {/* Technical Specs / Details */}
                 <div className="relative z-10 grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
                     <div>
-                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Operation</h4>
-                        <p className="text-neutral-300 font-medium">Local / Client-Side</p>
+                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Privacy</h4>
+                        <p className="text-neutral-300 font-medium">No Uploads</p>
                     </div>
                     <div>
-                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Security</h4>
-                        <p className="text-neutral-300 font-medium">Air-Gapped Logic</p>
+                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Speed</h4>
+                        <p className="text-neutral-300 font-medium">Instant</p>
                     </div>
                     <div>
-                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Latency</h4>
-                        <p className="text-neutral-300 font-medium">0ms (Instant)</p>
+                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Cost</h4>
+                        <p className="text-neutral-300 font-medium">Free</p>
                     </div>
                     <div>
-                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Max Load</h4>
+                        <h4 className="font-mono text-xs text-orange-500 mb-2 uppercase tracking-wider">Limit</h4>
                         <p className="text-neutral-300 font-medium">50MB / File</p>
                     </div>
                 </div>
@@ -76,8 +76,8 @@ export function Home({ onFileSelect }: HomeProps) {
                 {/* Mobile Header (Visible only on small screens) */}
                 <div className="lg:hidden mb-12 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-white text-lg rounded">N</div>
-                        <span className="font-bold text-neutral-900 tracking-tight">Nano PDF</span>
+                        <div className="w-8 h-8 bg-orange-500 flex items-center justify-center font-mono font-bold text-white text-lg rounded">P</div>
+                        <span className="font-bold text-neutral-900 tracking-tight">PDF Merger</span>
                     </div>
                 </div>
 
@@ -86,12 +86,12 @@ export function Home({ onFileSelect }: HomeProps) {
 
                     <div className="w-full mb-8 text-center lg:text-left">
                         <span className="hidden lg:inline-block font-mono text-xs text-neutral-400 mb-4 tracking-widest uppercase">
-                            // Awaiting Input
+                            Ready
                         </span>
                         <h2 className="text-3xl md:text-5xl font-light text-neutral-900 mb-2">
-                            Initialize Workflow
+                            Merge PDFs
                         </h2>
-                        <p className="text-neutral-500">Drop documents to begin processing sequence.</p>
+                        <p className="text-neutral-500">Drag & drop PDFs here to combine them in seconds.</p>
                     </div>
 
                     {/* Bold Upload Zone Container */}
