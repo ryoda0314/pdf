@@ -16,6 +16,15 @@ export const usePdfEditor = () => {
     const addPdf = useCallback(async (file: File) => {
         setIsProcessing(true);
         setError(null);
+
+        // Enforce 50MB Limit
+        const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+        if (file.size > MAX_SIZE) {
+            setError(`File size exceeds 50MB limit: ${file.name}`);
+            setIsProcessing(false);
+            return;
+        }
+
         try {
             const { doc: proxy, bytes } = await PdfManager.loadPdf(file);
             const docId = uuidv4();

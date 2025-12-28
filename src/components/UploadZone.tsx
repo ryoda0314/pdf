@@ -28,22 +28,26 @@ export function UploadZone({ onFileSelect, className, isCompact = false }: Uploa
         <div
             {...getRootProps()}
             className={clsx(
-                "cursor-pointer border-2 border-dashed rounded-lg transition-colors flex flex-col items-center justify-center text-center",
-                isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400 hover:bg-gray-50",
+                "cursor-pointer border-2 border-dashed rounded-xl transition-all duration-200 ease-in-out flex flex-col items-center justify-center text-center group",
+                isDragActive
+                    ? "border-blue-500 bg-blue-50 scale-[1.02] shadow-lg"
+                    : "border-slate-300 hover:border-blue-400 hover:bg-slate-50 hover:shadow-md",
                 isCompact ? "p-4" : "p-12",
                 className
             )}
         >
             <input {...getInputProps()} />
-            <UploadCloud className={clsx("text-gray-400 mb-2", isCompact ? "w-6 h-6" : "w-12 h-12")} />
+            <div className={clsx("transition-transform duration-300", isDragActive ? "scale-110" : "group-hover:scale-110")}>
+                <UploadCloud className={clsx("mb-3 text-slate-400 group-hover:text-blue-500 transition-colors", isCompact ? "w-6 h-6" : "w-12 h-12")} />
+            </div>
             {isCompact ? (
-                <span className="text-sm font-medium text-gray-600">Add PDF</span>
+                <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900">Add PDF</span>
             ) : (
                 <>
-                    <p className="text-lg font-medium text-gray-700">
+                    <p className="text-lg font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         {isDragActive ? "Drop PDF here" : "Drag & drop PDF here"}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+                    <p className="text-sm text-slate-500 mt-2">or click to browse</p>
                 </>
             )}
         </div>

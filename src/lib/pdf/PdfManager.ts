@@ -34,11 +34,22 @@ export class PdfManager {
         const page = await pdfDoc.getPage(pageIndex + 1); // pdf.js is 1-based
         const viewport = page.getViewport({ scale });
 
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        // High-DPI rendering support
+        const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+        // Set actual canvas size to (viewport * pixelRatio)
+        canvas.width = Math.floor(viewport.width * pixelRatio);
+        canvas.height = Math.floor(viewport.height * pixelRatio);
+
+        // Set display size (css) to scale
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
 
         const context = canvas.getContext('2d');
         if (!context) throw new Error('Canvas context not available');
+
+        // Scale context to match pixel ratio
+        context.scale(pixelRatio, pixelRatio);
 
         const renderContext = {
             canvasContext: context,

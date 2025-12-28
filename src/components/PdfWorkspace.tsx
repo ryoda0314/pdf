@@ -2,15 +2,17 @@
 
 import React from 'react';
 import { usePdfEditor } from '@/hooks/usePdfEditor';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
-import { PageThumbnails } from './PageThumbnails';
+import { PageThumbnails, Thumbnail } from './PageThumbnails';
 import { PagePreview } from './PagePreview';
 import { Toolbar } from './Toolbar';
 import { UploadZone } from './UploadZone';
-// Refresh imports
+import { Home } from './Home';
 
 export function PdfWorkspace() {
+    const [isGridView, setIsGridView] = React.useState(false);
+    const [activeId, setActiveId] = React.useState<string | null>(null);
     const {
         docs,
         pagePlan,
@@ -26,21 +28,56 @@ export function PdfWorkspace() {
     } = usePdfEditor();
 
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    const handleDragStart = (event: DragStartEvent) => {
+        setActiveId(event.active.id as string);
+    };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (active.id !== over?.id && over) {
             movePage(active.id as string, over.id as string);
         }
+        setActiveId(null);
     };
 
+    const handleDragCancel = () => {
+        setActiveId(null);
+    };
+
+    // Find the active item data for the overlay
+    const activeItem = activeId ? pagePlan.find(p => p.id === activeId) : null;
+    const activeDoc = activeItem ? docs[activeItem.docId] : null;
+
+    // Show Home (Top Page) if no pages exist and not currently processing
+    if (pagePlan.length === 0 && !isProcessing) {
+        // ... (existing Home logic) ...
+        return (
+            <>
+                {error && (
+                    <div className="fixed top-4 right-4 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 shadow-lg z-50 rounded-r" role="alert">
+                        <p className="font-medium">Error</p>
+                        <p className="text-sm">{error}</p>
+                    </div>
+                )}
+                <Home onFileSelect={addPdf} />
+            </>
+        );
+    }
+    // ... (rest of component) ...
+
     return (
-        <div className="flex flex-col h-screen bg-gray-50 text-gray-900">
+        <div className="flex flex-col h-screen bg-neutral-100 text-neutral-900 font-sans">
+            {/* ... Toolbar and Error existing code ... */}
             <Toolbar
                 pageCount={pagePlan.length}
                 onAddPdf={addPdf}
@@ -49,27 +86,26 @@ export function PdfWorkspace() {
                 pagePlan={pagePlan}
             />
             {error && (
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                    <p>{error}</p>
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 shadow-sm z-30" role="alert">
+                    <p className="font-medium">Error</p>
+                    <p className="text-sm">{error}</p>
                 </div>
             )}
 
-            {/* Empty State Overlay */}
+
+            {/* ... Home Overlay existing code ... */}
             {pagePlan.length === 0 && !isProcessing && (
-                <div className="absolute inset-0 bg-gray-50 z-40 flex items-center justify-center p-8">
-                    <div className="max-w-xl w-full bg-white p-8 rounded-xl shadow-xl border text-center">
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">PDF Editor</h2>
-                        <p className="text-gray-500 mb-8">Upload a PDF to start editing, organizing, and merging.</p>
-                        <UploadZone onFileSelect={addPdf} />
-                    </div>
-                </div>
+                // ... logic same ...
+                <div />
             )}
 
             <div className="flex flex-1 overflow-hidden">
                 <DndContext
                     sensors={sensors}
-                    collisionDetection={closestCenter}
+                    collisionDetection={closestCorners}
+                    onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    onDragCancel={handleDragCancel}
                 >
                     <PageThumbnails
                         pagePlan={pagePlan}
@@ -77,7 +113,22 @@ export function PdfWorkspace() {
                         selectedPageId={selectedPageId}
                         onSelect={setSelectedPageId}
                         onDelete={deletePage}
+                        isGridView={isGridView}
+                        onToggleGridView={() => setIsGridView(!isGridView)}
                     />
+
+                    <DragOverlay>
+                        {activeItem && activeDoc ? (
+                            <Thumbnail
+                                item={activeItem}
+                                index={pagePlan.indexOf(activeItem)}
+                                doc={activeDoc}
+                                isSelected={activeItem.id === selectedPageId}
+                                isGridView={isGridView}
+                                isOverlay
+                            />
+                        ) : null}
+                    </DragOverlay>
                 </DndContext>
 
                 <PagePreview
@@ -88,11 +139,12 @@ export function PdfWorkspace() {
                     setZoom={setZoom}
                 />
             </div>
-            {/* Overlay Loading State */}
+            {/* ... Loading Overlay ... */}
             {isProcessing && (
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-50">
-                    <div className="bg-white p-4 rounded shadow-lg animate-pulse">
-                        Processing...
+                <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white px-8 py-6 rounded-xl shadow-2xl flex flex-col items-center gap-4">
+                        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-slate-600 font-medium animate-pulse">Processing PDF...</p>
                     </div>
                 </div>
             )}
